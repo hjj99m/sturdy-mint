@@ -20,7 +20,7 @@ config.read('cond.txt')
 tags = config['CONDITION']['tags'].split(',')
 exts = config['CONDITION']['exts'].split(',')
 target_dir = config['CONDITION']['target_dir']
-
+strict = config['CONDITION']['strict']
 ################################################
 flist = []
 fdict = dict()
@@ -45,13 +45,24 @@ for (dirpath, dirnames, filenames) in walk(target_dir):
 ################################################
 cc = list(fdict.keys())
 dd = list(fdict.values())
+fnum = 0
 
 ff = open('result.txt', mode='w')
 ff.write('Total: ' + str(len(cc)) + ' file(s)\n')
 ff.write('------------------------------------\n')
-for w in cc:
-    ff.write(str(w) + '\n----\n')
-    for ww in fdict[w]:
-        ff.write(str(ww) + '\n')
+if strict:
+    for w in cc:
+        if len(fdict[w]) == len(tags):
+            ff.write(str(w) + '\n')
+            fnum += 1
     ff.write('------------------------------------\n')
+else:
+    for w in cc:   
+        ff.write(str(w) + '\n----\n')
+        fnum += 1
+        for ww in fdict[w]:
+            ff.write(str(ww) + '\n')
+        ff.write('------------------------------------\n')
+
+ff.write('Found: ' + str(fnum) + ' file(s)\n')
 ff.close()

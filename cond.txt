@@ -2,3 +2,4 @@
 tags = video,setup-data
 exts = *.html,*.js,*.htm
 target_dir = /home/hubert/workspace/
+strict = KeepEmptyIsFalse
