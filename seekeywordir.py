@@ -15,7 +15,7 @@ def my_check_ext(filename, extnames):
     return flag
 ################################################
 config = configparser.ConfigParser()
-config.read('result.txt')
+config.read('cond.txt')
 
 tags = config['CONDITION']['tags'].split(',')
 exts = config['CONDITION']['exts'].split(',')
@@ -46,7 +46,12 @@ for (dirpath, dirnames, filenames) in walk(target_dir):
 cc = list(fdict.keys())
 dd = list(fdict.values())
 
+ff = open('result.txt', mode='w')
+ff.write('Total: ' + str(len(cc)) + ' file(s)\n')
+ff.write('------------------------------------\n')
 for w in cc:
-    print(w + ':')
+    ff.write(str(w) + '\n----\n')
     for ww in fdict[w]:
-        print(ww)
+        ff.write(str(ww) + '\n')
+    ff.write('------------------------------------\n')
+ff.close()
