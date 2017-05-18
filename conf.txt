@@ -1,0 +1,22 @@
+[CONDITION]
+###############
+#欲分析的log檔
+log = /home/hubert/coding/cl-error.2017-05.log
+###############
+#template directory 務必和template_lite設定一致, 否則md5編碼後的結果不同
+tpl_dir = /usr/local/apache2/trunk.odyssey.com.tw/HomeBase/class/templates
+#real directory, where the template files are
+real_dir = /home/hubert/workspace/HomeBase/class/templates
+###############
+#搜尋目標檔案類型,務必使用, 豆號分格不可有空白
+target_fexts = *.php,*.sql,*.inc
+#搜尋目標檔案路徑，包含子目錄
+target_dir = /home/hubert/workspace/HomeBase/class
+#分析結果存檔路徑
+result_dir = ./
+#分析結果存檔檔名
+result_file = hooray.txt
+###############
+#Boolean:  True / False
+#字串精準比對
+accurate = True
