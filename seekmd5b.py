@@ -1,20 +1,22 @@
 from os import walk
+from distutils.util import strtobool
 import fnmatch, os.path, configparser, hashlib, re
 
 ################################################
-#config = configparser.ConfigParser()
-#config.read('condmd5.txt')
+config = configparser.ConfigParser()
+config.read('conf.txt')
 
-log = '/home/hubert/coding/cl-error.2017-05.log'
-tpl_dir = '/usr/local/apache2/trunk.odyssey.com.tw/HomeBase/class/templates'
-real_dir = '/home/hubert/workspace/HomeBase/class/templates'
+log = config['CONDITION']['log']
+tpl_dir = config['CONDITION']['tpl_dir']
+real_dir = config['CONDITION']['real_dir']
+target_fexts = config['CONDITION']['target_fexts'].split(',')
+target_dir = config['CONDITION']['target_dir']
+#strict = strtobool(config['CONDITION']['strict'])
+accurate = strtobool(config['CONDITION']['accurate'])
+result_dir = config['CONDITION']['result_dir']
+result_file = config['CONDITION']['result_file']
 
-target_fexts = ['*.php', '*.sql', '*.inc']
-target_dir = '/home/hubert/workspace/HomeBase/class'
-strict = False
-accuracy = False
-result_dir = './'
-result_file = "seekMD5result.txt"
+
 ################################################
 def my_check_ext(filename, extnames):
     ''' haha '''
@@ -99,7 +101,7 @@ def write_analyze_log(mm_dict, res_file='md5result.txt'):
         ff.write("md5: " + m + "\nfile: " + mm_dict[m]['file'] + "\nUndefined index: " + ",".join(mm_dict[m]['uindex']) + "\n==Error Msg== \n" +  "\n".join(mm_dict[m]['err_msg']) + "\n-----------------------------\n")
     ff.close()
 ################################################
-def seek_tags(tdict, fexts=[], target_dir='', strict=True):
+def seek_tags(tdict, fexts=[], target_dir='', accuracy=True):
     ''' hooray '''
     fdict = dict()
     fn = ''
@@ -117,29 +119,18 @@ def seek_tags(tdict, fexts=[], target_dir='', strict=True):
                     tmp = set()
 
                     for line in f.readlines():
-                        if tpl in line:
+                        if find_whole_word(tpl, line, accuracy):
                             tmp.add(tpl)
                         for tag in tags:
                             if find_whole_word(tag, line, accuracy) and tag not in tmp:
                                 tmp.add(tag)
                                 fdict[fn] = tmp
                 except:
-                    cannot_open_msg += '[Seek Tag] ' + fn + "--" + tpl +"\n"
+                    cannot_open_msg += '[Seek Tag] ' + fn + "\n"
 
         else:
             pass
 
-    cc = list(fdict.keys())
-    dd = dict()
-
-    if strict:
-        for w in cc:
-            if len(fdict[w]) == len(tags):
-                if w in list(dd.keys()):
-                    dd[w].add(w)
-                else:
-                    dd[w] = set(fdict[w])
-                return dd
     else:
         return fdict, cannot_open_msg
 ################################################
@@ -169,7 +160,7 @@ mm_dict = analyze_log(log, tpl_dir, real_dir)
 ######
 except_msg = ''
 for m in list(mm_dict.keys()):
-    mm_dict[m]['search'], tmp_msg = seek_tags(mm_dict[m], target_fexts, target_dir, strict)
+    mm_dict[m]['search'], tmp_msg = seek_tags(mm_dict[m], target_fexts, target_dir)
     except_msg += tmp_msg
 write_dict_to_file(mm_dict, result_file)
 
