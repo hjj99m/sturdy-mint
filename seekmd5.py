@@ -32,12 +32,16 @@ try:
             et = t_line.find(end_tag)
             tt = t_line.find('[error]')
             yt = t_line.find(' in /')
+            ut = t_line.find('Undefined index:')
             md5_str = t_line[bt:et]
-            err_msg = t_line[tt+len('[error]'):yt].rstrip() + ' [on line' + t_line[et+len(end_tag):].rstrip() + ']'
+            uindex = t_line[ut+len('Undefined index:'):yt].strip()
+            #print(uindex)
+            err_msg = t_line[tt+len('[error]'):yt].strip() + ' [line ' + t_line[et+len(end_tag):].strip() + ']'
             if md5_str in list(mm_dict.keys()):
                 mm_dict[md5_str]['err_msg'].add(err_msg)
+                mm_dict[md5_str]['uindex'].add(uindex)
             else:
-                mm_dict[md5_str] = {'err_msg':set([err_msg]), 'md5': md5_str, 'file':''}
+                mm_dict[md5_str] = {'err_msg':set([err_msg]), 'md5': md5_str, 'file':'', 'uindex': set([uindex])}
 except:
     print('cannot open file:' + log)
 ################################################
@@ -59,5 +63,5 @@ ff = open('md5result.txt', mode='w')
 ff.write('Total: ' + str(len(mm_dict.keys())) + ' file(s)\n')
 ff.write('------------------------------------\n')
 for m in list(mm_dict.keys()):
-    ff.write(" md5: " + m + "\n path: " + mm_dict[m]['file'] + "\n ==Error Msg== \n" + "\n".join(mm_dict[m]['err_msg']) + "\n-----------------------------\n")
+    ff.write("md5: " + m + "\nfile: " + mm_dict[m]['file'] + "\nuindex: " + ",".join(mm_dict[m]['uindex']) + "\n==Error Msg== \n" +  "\n".join(mm_dict[m]['err_msg']) + "\n-----------------------------\n")
 ff.close()
